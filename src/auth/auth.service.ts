@@ -4,18 +4,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthRegisterDTO } from './dto/auth-register.dto';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer/dist';
+import { UserEntity } from 'src/user/entity/user.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly prismaService: PrismaService,
     private readonly userService: UserService,
     private readonly mailer: MailerService,
   ) {}
@@ -23,7 +21,7 @@ export class AuthService {
   private audience: string = 'users';
   private issuer: string = 'login';
 
-  createToken(user: User) {
+  createToken(user: UserEntity) {
     /*
     const date = Date.now() + 1000 * 60 * 1; //Adicionando 1 minuto. Date.now() retorna em milisegundos.
     const formatter = new Intl.DateTimeFormat('pt-BR', {
@@ -72,24 +70,25 @@ export class AuthService {
   async login(email: string, password: string) {
     console.log(process.env);
     //Busca se há email cadastrado
-    const user = await this.prismaService.user.findFirst({
+/*     const user = await this.prismaService.user.findFirst({
       where: { email },
-    });
+    }); */
 
-    if (!user) {
+    if (!UserEntity) {
       throw new UnauthorizedException(`Usuário ${email} não autorizado.`);
     }
 
-    const result = await bcrypt.compare(password, user.password);
+    const result = '';
+    //result = await bcrypt.compare(password, UserEntity.password);
     if (!result) {
       throw new UnauthorizedException('Senha inválida!');
     }
 
-    return this.createToken(user);
+    //return this.createToken(UserEntity);
   }
 
   async forget(email: string) {
-    const user = await this.prismaService.user.findFirst({
+    const user = await this.user.findFirst({
       where: { email },
     });
 

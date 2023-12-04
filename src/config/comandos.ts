@@ -197,6 +197,15 @@ ORM e NestJS
 
   TypeORM
 
+    Desinstalar o Prisma:
+
+      npm uninstall prisma
+      npm uninstall @prisma/client
+
+    Instalar o TypeORM:
+
+      npm i typeorm mysql2 @nestjs/typeorm
+
     Referências:
 
       https://typeorm.io/
