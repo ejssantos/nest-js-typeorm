@@ -9,6 +9,8 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer/dist';
 import { UserEntity } from 'src/user/entity/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -16,12 +18,15 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UserService,
     private readonly mailer: MailerService,
+
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
   ) {}
 
   private audience: string = 'users';
   private issuer: string = 'login';
 
-  createToken(user: UserEntity) {
+  createToken(user: AuthRegisterDTO) {
     /*
     const date = Date.now() + 1000 * 60 * 1; //Adicionando 1 minuto. Date.now() retorna em milisegundos.
     const formatter = new Intl.DateTimeFormat('pt-BR', {
@@ -68,33 +73,38 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    console.log(process.env);
-    //Busca se há email cadastrado
-/*     const user = await this.prismaService.user.findFirst({
-      where: { email },
-    }); */
+    //console.log(process.env);
 
-    if (!UserEntity) {
+    //Busca se há email cadastrado
+    const user = await this.usersRepository.findOneBy({ email });
+    /* Ou...
+    const user = await this.usersRepository.findOne({
+      where: { email },
+    });
+    */
+
+    //console.log(user);
+
+    if (!user) {
       throw new UnauthorizedException(`Usuário ${email} não autorizado.`);
     }
 
-    const result = '';
-    //result = await bcrypt.compare(password, UserEntity.password);
+    const result = await bcrypt.compare(password, user.password);
     if (!result) {
       throw new UnauthorizedException('Senha inválida!');
     }
 
-    //return this.createToken(UserEntity);
+    return this.createToken(user);
   }
 
   async forget(email: string) {
-    const user = await this.user.findFirst({
-      where: { email },
-    });
+    const user = await this.usersRepository.findOneBy({ email });
 
     if (!user) {
       throw new UnauthorizedException(`E-mail ${email} não autorizado.`);
     }
+
+    //console.log('User', user);
 
     // Enviar um e-mail...
     const token = this.jwtService.sign(
@@ -123,9 +133,7 @@ export class AuthService {
     return true;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async reset(password: string, token: string) {
-    // TODO: validar o token...
     try {
       const data:any = this.jwtService.verify(token, {
         audience: 'users',
@@ -139,23 +147,19 @@ export class AuthService {
       const salt = await bcrypt.genSalt();
       password = await bcrypt.hash(password, salt);
 
-      const user = await this.prismaService.user.update({
-        where: {
-          id: Number(data.id),
-        },
-        data: {
-          password,
-        },
+      await this.usersRepository.update(Number(data.id), {
+        password,
       });
 
-      return this.createToken(user);
+      const user = await this.userService.search(Number(data.id));
 
+      return this.createToken(user);
     } catch (e) {
       throw new BadRequestException(e);
     }
   }
 
-  async register(data: AuthRegisterDTO) {
+  async register(data: UserEntity) {
     const user = await this.userService.create(data);
     return this.createToken(user);
   }

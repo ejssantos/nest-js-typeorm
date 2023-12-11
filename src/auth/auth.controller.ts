@@ -26,6 +26,7 @@ import {
 } from '@nestjs/platform-express';
 import { join } from 'path';
 import { FileService } from 'src/file/file.service';
+import { UserEntity } from 'src/user/entity/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -41,7 +42,7 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() body: AuthRegisterDTO) {
+  async register(@Body() body: UserEntity) {
     return await this.authService.register(body);
   }
 
@@ -55,38 +56,6 @@ export class AuthController {
     return await this.authService.reset(password, token);
   }
 
-  /*
-  @Post('check')
-  async check(@Body() body) {
-    return await this.authService.checkToken(body.token);
-  }
-
-  Ou...
-
-  @Post('check')
-  async check(@Headers('authorization') token) {
-    //return headers;
-    return await this.authService.checkToken((token ?? '').split(' ')[1]);
-  }
-  
-  Ou...
-
-  @UseGuards(AuthGuard)
-  @Post('check')
-  async check() {
-    return { me: 'Ok' };
-    //return await this.authService.checkToken((token ?? '').split(' ')[1]);
-  }
-
-  Ou...
-
-  @UseGuards(AuthGuard)
-  @Post('check')
-  async check(@Req() req) {
-    return { check: 'Ok', data: req.tokenPayload, user: req.user };
-  }
-  */
-
   @UseGuards(AuthGuard)
   @Post('check')
   async check(@User('email') user) {
@@ -97,7 +66,6 @@ export class AuthController {
   @UseInterceptors(FileInterceptor('file'))
   @UseGuards(AuthGuard)
   @Post('photo')
-  //async uploadPhoto(@User() user, @UploadedFile() photo: Express.Multer.File) {
   async uploadPhoto(
     @User() user,
     @UploadedFile(

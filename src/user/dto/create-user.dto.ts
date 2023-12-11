@@ -6,10 +6,14 @@ import {
   IsOptional,
   IsDateString,
   IsEnum,
+  //IsNumber,
 } from 'class-validator';
 import { Role } from 'src/enums/role.enum';
 
 export class CreateUserDTO {
+  //@IsNumber()
+  id: number;
+
   @IsString()
   @Length(3)
   name: string;

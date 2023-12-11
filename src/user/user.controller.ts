@@ -11,7 +11,6 @@ import {
   UseInterceptors,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDTO } from './dto/create-user.dto';
 import { UpdatePutUserDTO } from './dto/update-put-user.dto';
 import { UpdatePatchUserDTO } from './dto/update-patch-user.dto';
 import { UserService } from './user.service';
@@ -22,12 +21,13 @@ import { Roles } from 'src/decorators/role.decorator';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { RoleGuard } from 'src/guards/role.guard';
 import { SkipThrottle, ThrottlerGuard } from '@nestjs/throttler';
+import { UserEntity } from './entity/user.entity';
 
 //Em nível de classe
+@Controller('users')
 @UseGuards(ThrottlerGuard, AuthGuard, RoleGuard)
 //@UseGuards(AuthGuard, RoleGuard)
 @UseInterceptors(LogInterceptor)
-@Controller('users')
 @Roles(Role.Admin)
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -45,14 +45,9 @@ export class UserController {
     return this.userService.create(user);
   }
   */
-  async create(@Body() user: CreateUserDTO) {
+  async create(@Body() user: UserEntity) {
     return this.userService.create(user);
   }
-
-  // @Get()
-  // async list() {
-  //   return { users: [] };
-  // }
 
   //@UseGuards(ThrottlerGuard)
   //Definindo um limite de acesso em nível de rota. ttl em milisegundos.
@@ -63,27 +58,6 @@ export class UserController {
     return this.userService.list();
   }
 
-  /*
-  @Get(':id')
-  async search(@Param() params) {
-    return { users: {}, params };
-  }
-
-  Ou...
-  
-  @Get(':id')
-  async search(@Param('id', ParseIntPipe) id: number) {
-    return { users: {}, id };
-  }
-  
-  Ou...
-
-  @Get(':id')
-  async search(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.search(id);
-  }
-  */
-
   //Caso deseje ignorar o Throttle
   @SkipThrottle()
   @Roles(Role.User, Role.Admin)
@@ -93,45 +67,6 @@ export class UserController {
     console.log({ id });
     return this.userService.search(id);
   }
-
-  /*
-  @Put(':id')
-  async updateAll(@Body() user: UpdatePutUserDTO, @Param() params) {
-    return {
-      method: 'PUT',
-      user,
-      params,
-    };
-  }
-  
-  //Ou...
-
-  async updateAll(@Body() {name, email, password}: UpdatePutUserDTO, @Param() params) {
-    return {
-      method: 'PUT',
-      name, email, password,
-      params,
-    };
-  }
-
-  @Put(':id')
-  async updateAll(@Body() user: UpdatePutUserDTO, @Param('id', ParseIntPipe) id: number) {
-    return {
-      method: 'PUT',
-      user,
-      id,
-    };
-  }
-
-  @Patch(':id')
-  async updatePartial(@Body() user: UpdatePatchUserDTO, @Param('id', ParseIntPipe) id: number) {
-    return {
-      method: 'PATCH',
-      user,
-      id,
-    };
-  }
-*/
 
   @Put(':id')
   async updateAll(
@@ -148,20 +83,6 @@ export class UserController {
   ) {
     return this.userService.updatePartial(id, user);
   }
-
-  /*
-  @Delete(':id')
-  async delete(@Param() params) {
-    return { params }
-  }
-  
-  Ou...
-  
-  @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
-    return { id }
-  }
-  */
 
   @Delete(':id')
   async delete(@Param('id', ParseIntPipe) id: number) {

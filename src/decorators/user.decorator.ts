@@ -1,8 +1,4 @@
-import {
-  ExecutionContext,
-  //NotFoundException,
-  createParamDecorator,
-} from '@nestjs/common';
+import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 
 export const User = createParamDecorator(
   (filter: string, context: ExecutionContext) => {
