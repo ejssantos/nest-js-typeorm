@@ -209,4 +209,33 @@ ORM e NestJS
     Referências:
 
       https://typeorm.io/
+
+
+  dotEnv
+
+    Instalação:
+
+      npm i dotenv -D
+
+  Migrations:
+
+    Instalação
+
+      npm run migrate:up
+
+    Subindo o Migration
+
+      Subir nigration quer dizer atualizar o banco de dados.
+
+      Instrução:
+
+        npm run migrate:up
+
+        onde migrate:up é o script abaixo:
+
+          npm run typeorm:ts migration:run -- -d ./typeorm/data-source.ts
+      
+      Links:
+
+        //https://stackoverflow.com/questions/72580969/nestjs-typeorm-error-during-migration-run-unable-to-open-file
 */
