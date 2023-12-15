@@ -12,9 +12,7 @@ import {
   MaxFileSizeValidator,
 } from '@nestjs/common';
 import { AuthForgetDTO } from './dto/auth-forget.dto';
-import { AuthRegisterDTO } from './dto/auth-register.dto';
 import { AuthLoginDTO } from './dto/auth-login.dto';
-//import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
 import { AuthResetDTO } from './dto/auth-reset.dto';
 import { AuthGuard } from 'src/guards/auth.guard';

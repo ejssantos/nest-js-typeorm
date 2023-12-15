@@ -135,7 +135,7 @@ export class AuthService {
 
   async reset(password: string, token: string) {
     try {
-      const data:any = this.jwtService.verify(token, {
+      const data: any = this.jwtService.verify(token, {
         audience: 'users',
         issuer: 'forget',
       });

@@ -43,7 +43,7 @@ export class UserEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
-/*
+  /*
   @Column({
     enum: [1, 2],
   })
